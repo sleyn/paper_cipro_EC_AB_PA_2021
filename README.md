@@ -256,7 +256,8 @@ lofreq call-parallel \
     
     5.  Assess frequency of insertion by a formula:
 
-\[Frequency = \frac{\frac{R_{l} + \ R_{r}}{2}*(1 + \ \frac{B_{\min}}{A_{\text{rlen}}})}{D_{t}*(1 - \ \frac{\text{mmatch}}{A_{\text{rlen}}})}\]
+
+((R<sub>l</sub> + R<sub>r</sub>) / 2 * ( 1 + B<sub>min</sub> / A<sub>rlen</sub>)) / (Dt * ( 1 - mmatch / A<sub>rlen</sub> ))
 
 where:
 
