@@ -3,7 +3,7 @@ Supplementary code for "Morbidostat-Directed Experimental Evolution of Ciproflox
 
 1.  **Software list**
 
-> All computations were made on CentOS v.7.6.
+All computations were made on CentOS v.7.6.
 
   - R v. 3.6.0 (<https://www.r-project.org/>)
 
@@ -11,16 +11,16 @@ Supplementary code for "Morbidostat-Directed Experimental Evolution of Ciproflox
 
   - FastQC v. 0.11.8
     (<https://www.bioinformatics.babraham.ac.uk/projects/fastqc/>)
-    <sup>1</sup>
+    <a href="#ref1"><sup>1</sup></a>
 
   - Trimmomatic v. 0.36
-    (<http://www.usadellab.org/cms/?page=trimmomatic>) <sup>2</sup>
+    (<http://www.usadellab.org/cms/?page=trimmomatic>) <a href="#ref2"><sup>2</sup></a>
 
-  - BWA v. 0.7.13 (<http://bio-bwa.sourceforge.net/>) <sup>3</sup>
+  - BWA v. 0.7.13 (<http://bio-bwa.sourceforge.net/>) <a href="#ref3"><sup>3</sup></a>
 
   - Picard v. 2.2.1 (<https://broadinstitute.github.io/picard/>)
 
-  - LoFreq v. 2.1.3.1 (<https://csb5.github.io/lofreq/>) <sup>4</sup>
+  - LoFreq v. 2.1.3.1 (<https://csb5.github.io/lofreq/>) <a href="#ref4"><sup>4</sup></a>
 
   - Samtools + bcftools v. 1.3 (<http://www.htslib.org/>) <sup>3,
     5</sup>
@@ -28,13 +28,13 @@ Supplementary code for "Morbidostat-Directed Experimental Evolution of Ciproflox
   - Genome analysis Toolkit (GATK) v. 3.5
     (<https://software.broadinstitute.org/gatk/>) <sup>6, 7</sup>
 
-  - Qualimap v. 2.2 (<http://qualimap.bioinfo.cipf.es/>) <sup>8</sup>
+  - Qualimap v. 2.2 (<http://qualimap.bioinfo.cipf.es/>) <a href="#ref8"><sup>8</sup></a>
 
-  - snpEff v. 4.3 (<http://snpeff.sourceforge.net/>) <sup>9</sup>
+  - snpEff v. 4.3 (<http://snpeff.sourceforge.net/>) <a href="#ref9"><sup>9</sup></a>
 
-  - breseq v. 0.33.2 (<http://barricklab.org/breseq>) <sup>10</sup>
+  - breseq v. 0.33.2 (<http://barricklab.org/breseq>) <a href="#ref10"><sup>10</sup></a>
 
-  - CNOGpro (R package, installation through CRAN) <sup>11</sup>
+  - CNOGpro (R package, installation through CRAN) <a href="#ref11"><sup>11</sup></a>
 
   - Albacore v. 2.3.4 (<https://community.nanoporetech.com/>; Customer
     login required)
@@ -42,12 +42,12 @@ Supplementary code for "Morbidostat-Directed Experimental Evolution of Ciproflox
   - Prechop v. 0.2.4 (<https://github.com/rrwick/Porechop>)
 
   - MinionQC v. 1.3.0 (<https://github.com/roblanf/minion_qc>)
-    <sup>12</sup>
+    <a href="#ref12"><sup>12</sup></a>
 
   - SPAdes v. 3.13.0 (<http://cab.spbu.ru/software/spades/>)
-    <sup>13</sup>
+    <a href="#ref13"><sup>13</sup></a>
 
-  - MUMmer v. 3.1 (<http://mummer.sourceforge.net/>) <sup>14</sup>
+  - MUMmer v. 3.1 (<http://mummer.sourceforge.net/>) <a href="#ref14"><sup>14</sup></a>
 
   - iJump (<https://github.com/sleyn/ijump>)
 
@@ -67,10 +67,10 @@ Supplementary code for "Morbidostat-Directed Experimental Evolution of Ciproflox
 
 2.  **Reads quality control**
 
-We accessed read quality with FastQC software <sup>1</sup>. The Q-scores
+We accessed read quality with FastQC software <a href="#ref1"><sup>1</sup></a>. The Q-scores
 in all samples had a very good distribution across all positions in
 reads and we did not trim reads based on Q-scores. The adapters were
-trimmed with Trimmomatic <sup>2</sup>:
+trimmed with Trimmomatic <a href="#ref2"><sup>2</sup></a>:
 
 java -jar trimmomatic-0.36.jar PE \\
 
@@ -103,8 +103,8 @@ over­­represented sequences in most cases were adapters with barcodes.
     1.  **Align reads on reference**
 
 Processed reads were aligned to a reference genome with BWA-MEM
-<sup>15</sup>. First, we should create read group header that is
-required for Genome Analysis Toolkit (GATK) <sup>6</sup>:
+<a href="#ref15"><sup>15</sup></a>. First, we should create read group header that is
+required for Genome Analysis Toolkit (GATK) <a href="#ref6"><sup>6</sup></a>:
 
 read1=\[trimmed paired reads 1\]
 
@@ -147,7 +147,7 @@ CREATE\_INDEX=true
 
 2.  **Alignment recalibration**
 
-Realign reads with LoFreq Vitebri algorithm <sup>4</sup>. As reads
+Realign reads with LoFreq Vitebri algorithm <a href="#ref4"><sup>4</sup></a>. As reads
 positions could be changed, we repeat sorting on the output bam:
 
 lofreq viterbi \\
@@ -196,7 +196,7 @@ java -jar \~/ngsbin/GATK-3.5/GenomeAnalysisTK.jar \\
 
 \-o Sample\_r\_bqsr.bam
 
-To assess alignment quality we used Qualimap <sup>8</sup>:
+To assess alignment quality we used Qualimap <a href="#ref8"><sup>8</sup></a>:
 
 qualimap bamqc \\
 
@@ -266,7 +266,7 @@ Sample\_r\_bqsr.bam
 > file with CIGAR string 10S120M30S mmatch is 30).
 
 Before using iJump we made a BLAST search of reference genomes against
-ISFinder database <sup>16</sup>. The output HTML files were processed
+ISFinder database <a href="#ref16"><sup>16</sup></a>. The output HTML files were processed
 with the isfinder\_parse.py script that comes with the iJump.
 
 python3 isfinder\_parse.py \\
@@ -292,7 +292,7 @@ python3 isjump.py \\
 
 1.  **Variant annotation and mutational dynamics analysis**
 
-> To annotate variant calling results we used snpEff <sup>9</sup> and
+> To annotate variant calling results we used snpEff <a href="#ref9"><sup>9</sup></a> and
 > custom scripts. All VCF files from LoFreq output were copied to one
 > directory and merged into one VCF file using bcftools:
 > 
@@ -351,7 +351,7 @@ python3 isjump.py \\
 1.  Variants in the potential repetitive regions where mapped reads
     could be attributed to the wrong copy of the region by error.
 
-> To do this we followed instructions from MUMmer <sup>14</sup> manual
+> To do this we followed instructions from MUMmer <a href="#ref14"><sup>14</sup></a> manual
 > to find repeats in the reference genome:
 > 
 > prefix=\[Prefix of the output files\]
@@ -405,7 +405,7 @@ python3 isjump.py \\
     
     1.  **Variant calling**
 
-We used the breseq software <sup>10</sup> to call variants in clonal
+We used the breseq software <a href="#ref10"><sup>10</sup></a> to call variants in clonal
 data:
 
 breseq \\
@@ -566,7 +566,7 @@ Rscript --vanilla spread\_gd\_tsv.R \\
 > 
 > Both reads demultiplexed by Albacore and Porechop were combined by
 > simple cat command. The hybrid assembly of *Acinetobacter baumannii*
-> ATCC 19978 genome was performed using SPAdes assembler <sup>13</sup>:
+> ATCC 19978 genome was performed using SPAdes assembler <a href="#ref13"><sup>13</sup></a>:
 > 
 > spades.py \\
 > 
@@ -581,50 +581,65 @@ Rscript --vanilla spread\_gd\_tsv.R \\
 \[Trimmed Illumina paired reads 2\]
 
 > Assembled genome was annotated by RASTtk pipeline on the corresponding
-> web server (<https://rast.nmpdr.org/>) <sup>17</sup>.
+> web server (<https://rast.nmpdr.org/>) <a href="#ref17"><sup>17</sup></a>.
 
 **References**
 
-> 1\. Andrews S. FastQC. A quality control tool for high throughput
-> sequence data.). Babraham Institute (2010).2. Bolger AM, Lohse M,
-> Usadel B. Trimmomatic: a flexible trimmer for Illumina sequence data.
-> *Bioinformatics* **30**, 2114-2120 (2014).3. Li H*, et al.* The
-> Sequence Alignment/Map format and SAMtools. *Bioinformatics* **25**,
-> 2078-2079 (2009).4. Wilm A*, et al.* LoFreq: a sequence-quality aware,
-> ultra-sensitive variant caller for uncovering cell-population
-> heterogeneity from high-throughput sequencing datasets. *Nucleic Acids
-> Res* **40**, 11189-11201 (2012).5. Li H. A statistical framework for
-> SNP calling, mutation discovery, association mapping and population
-> genetical parameter estimation from sequencing data. *Bioinformatics*
-> **27**, 2987-2993 (2011).6. DePristo MA*, et al.* A framework for
-> variation discovery and genotyping using next-generation DNA
-> sequencing data. *Nat Genet* **43**, 491-498 (2011).7. Van der Auwera
-> GA*, et al.* From FastQ data to high confidence variant calls: the
-> Genome Analysis Toolkit best practices pipeline. *Curr Protoc
-> Bioinformatics* **43**, 11 10 11-11 10 33 (2013).8. Okonechnikov K,
-> Conesa A, Garcia-Alcalde F. Qualimap 2: advanced multi-sample quality
-> control for high-throughput sequencing data. *Bioinformatics* **32**,
-> 292-294 (2016).9. Cingolani P*, et al.* A program for annotating and
-> predicting the effects of single nucleotide polymorphisms, SnpEff:
-> SNPs in the genome of Drosophila melanogaster strain w1118; iso-2;
-> iso-3. *Fly (Austin)* **6**, 80-92 (2012).10. Deatherage DE, Barrick
-> JE. Identification of mutations in laboratory-evolved microbes from
-> next-generation sequencing data using breseq. *Methods Mol Biol*
-> **1151**, 165-188 (2014).11. Brynildsrud O, Snipen LG, Bohlin J.
-> CNOGpro: detection and quantification of CNVs in prokaryotic
-> whole-genome sequencing data. *Bioinformatics* **31**, 1708-1715
-> (2015).12. Lanfear R, Schalamun M, Kainer D, Wang W, Schwessinger B.
-> MinIONQC: fast and simple quality control for MinION sequencing data.
-> *Bioinformatics* **35**, 523-525 (2019).13. Bankevich A*, et al.*
-> SPAdes: a new genome assembly algorithm and its applications to
-> single-cell sequencing. *J Comput Biol* **19**, 455-477 (2012).14.
-> Kurtz S*, et al.* Versatile and open software for comparing large
-> genomes. *Genome Biol* **5**, R12 (2004).15. Li H, Durbin R. Fast and
-> accurate short read alignment with Burrows-Wheeler transform.
-> *Bioinformatics* **25**, 1754-1760 (2009).16. Siguier P, Perochon J,
-> Lestrade L, Mahillon J, Chandler M. ISfinder: the reference centre for
-> bacterial insertion sequences. *Nucleic Acids Res* **34**, D32-36
-> (2006).17. Brettin T*, et al.* RASTtk: a modular and extensible
-> implementation of the RAST algorithm for building custom annotation
-> pipelines and annotating batches of genomes. *Sci Rep* **5**, 8365
-> (2015).
+<a name="ref1"></a>1. Andrews S. FastQC. A quality control tool for high throughput
+sequence data.). Babraham Institute (2010).
+<a name="#ref2"></a>2. Bolger AM, Lohse M,
+Usadel B. Trimmomatic: a flexible trimmer for Illumina sequence data.
+*Bioinformatics* **30**, 2114-2120 (2014).
+<a name="#ref3"></a>3. Li H*, et al.* The
+Sequence Alignment/Map format and SAMtools. *Bioinformatics* **25**,
+2078-2079 (2009).
+<a name="#ref4"></a>4. Wilm A*, et al.* LoFreq: a sequence-quality aware,
+ultra-sensitive variant caller for uncovering cell-population
+heterogeneity from high-throughput sequencing datasets. *Nucleic Acids
+Res* **40**, 11189-11201 (2012).
+<a name="#ref5"></a>5. Li H. A statistical framework for
+SNP calling, mutation discovery, association mapping and population
+genetical parameter estimation from sequencing data. *Bioinformatics*
+**27**, 2987-2993 (2011).
+<a name="#ref6"></a>6. DePristo MA*, et al.* A framework for
+variation discovery and genotyping using next-generation DNA
+sequencing data. *Nat Genet* **43**, 491-498 (2011).
+<a name="#ref7"></a>7. Van der Auwera
+GA*, et al.* From FastQ data to high confidence variant calls: the
+Genome Analysis Toolkit best practices pipeline. *Curr Protoc
+Bioinformatics* **43**, 11 10 11-11 10 33 (2013).
+<a name="#ref8"></a>8. Okonechnikov K,
+Conesa A, Garcia-Alcalde F. Qualimap 2: advanced multi-sample quality
+control for high-throughput sequencing data. *Bioinformatics* **32**,
+292-294 (2016).
+<a name="#ref9"></a>9. Cingolani P*, et al.* A program for annotating and
+predicting the effects of single nucleotide polymorphisms, SnpEff:
+SNPs in the genome of Drosophila melanogaster strain w1118; iso-2;
+iso-3. *Fly (Austin)* **6**, 80-92 (2012).
+<a name="#ref10"></a>10. Deatherage DE, Barrick
+JE. Identification of mutations in laboratory-evolved microbes from
+next-generation sequencing data using breseq. *Methods Mol Biol*
+**1151**, 165-188 (2014).
+<a name="#ref11"></a>11. Brynildsrud O, Snipen LG, Bohlin J.
+CNOGpro: detection and quantification of CNVs in prokaryotic
+whole-genome sequencing data. *Bioinformatics* **31**, 1708-1715
+(2015).
+<a name="#ref12"></a>12. Lanfear R, Schalamun M, Kainer D, Wang W, Schwessinger B.
+MinIONQC: fast and simple quality control for MinION sequencing data.
+*Bioinformatics* **35**, 523-525 (2019).
+<a name="#ref13"></a>13. Bankevich A*, et al.*
+SPAdes: a new genome assembly algorithm and its applications to
+single-cell sequencing. *J Comput Biol* **19**, 455-477 (2012).
+<a name="#ref14"></a>14. Kurtz S*, et al.* Versatile and open software for comparing large
+genomes. *Genome Biol* **5**, R12 (2004).
+<a name="#ref15"></a>15. Li H, Durbin R. Fast and
+accurate short read alignment with Burrows-Wheeler transform.
+*Bioinformatics* **25**, 1754-1760 (2009).
+<a name="#ref16"></a>16. Siguier P, Perochon J,
+Lestrade L, Mahillon J, Chandler M. ISfinder: the reference centre for
+bacterial insertion sequences. *Nucleic Acids Res* **34**, D32-36
+(2006).
+<a name="#ref17"></a>17. Brettin T*, et al.* RASTtk: a modular and extensible
+implementation of the RAST algorithm for building custom annotation
+pipelines and annotating batches of genomes. *Sci Rep* **5**, 8365
+(2015).
