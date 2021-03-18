@@ -585,61 +585,61 @@ Rscript --vanilla spread\_gd\_tsv.R \\
 
 **References**
 
-<a name="ref1"></a>1. Andrews S. FastQC. A quality control tool for high throughput
+<a name="ref1"></a>**1.** Andrews S. FastQC. A quality control tool for high throughput
 sequence data.). Babraham Institute (2010).<br>
-<a name="ref2"></a>2. Bolger AM, Lohse M,
+<a name="ref2"></a>**2.** Bolger AM, Lohse M,
 Usadel B. Trimmomatic: a flexible trimmer for Illumina sequence data.
 *Bioinformatics* **30**, 2114-2120 (2014).<br>
-<a name="ref3"></a>3. Li H*, et al.* The
+<a name="ref3"></a>**3.** Li H*, et al.* The
 Sequence Alignment/Map format and SAMtools. *Bioinformatics* **25**,
 2078-2079 (2009).<br>
-<a name="ref4"></a>4. Wilm A*, et al.* LoFreq: a sequence-quality aware,
+<a name="ref4"></a>**4.** Wilm A*, et al.* LoFreq: a sequence-quality aware,
 ultra-sensitive variant caller for uncovering cell-population
 heterogeneity from high-throughput sequencing datasets. *Nucleic Acids
 Res* **40**, 11189-11201 (2012).<br>
-<a name="ref5"></a>5. Li H. A statistical framework for
+<a name="ref5"></a>**5.** Li H. A statistical framework for
 SNP calling, mutation discovery, association mapping and population
 genetical parameter estimation from sequencing data. *Bioinformatics*
 **27**, 2987-2993 (2011).<br>
-<a name="ref6"></a>6. DePristo MA*, et al.* A framework for
+<a name="ref6"></a>**6.** DePristo MA*, et al.* A framework for
 variation discovery and genotyping using next-generation DNA
 sequencing data. *Nat Genet* **43**, 491-498 (2011).<br>
-<a name="ref7"></a>7. Van der Auwera
+<a name="ref7"></a>**7.** Van der Auwera
 GA*, et al.* From FastQ data to high confidence variant calls: the
 Genome Analysis Toolkit best practices pipeline. *Curr Protoc
 Bioinformatics* **43**, 11 10 11-11 10 33 (2013).<br>
-<a name="ref8"></a>8. Okonechnikov K,
+<a name="ref8"></a>**8.** Okonechnikov K,
 Conesa A, Garcia-Alcalde F. Qualimap 2: advanced multi-sample quality
 control for high-throughput sequencing data. *Bioinformatics* **32**,
 292-294 (2016).<br>
-<a name="ref9"></a>9. Cingolani P*, et al.* A program for annotating and
+<a name="ref9"></a>**9.** Cingolani P*, et al.* A program for annotating and
 predicting the effects of single nucleotide polymorphisms, SnpEff:
 SNPs in the genome of Drosophila melanogaster strain w1118; iso-2;
 iso-3. *Fly (Austin)* **6**, 80-92 (2012).<br>
-<a name="ref10"></a>10. Deatherage DE, Barrick
+<a name="ref10"></a>**10.** Deatherage DE, Barrick
 JE. Identification of mutations in laboratory-evolved microbes from
 next-generation sequencing data using breseq. *Methods Mol Biol*
 **1151**, 165-188 (2014).<br>
-<a name="ref11"></a>11. Brynildsrud O, Snipen LG, Bohlin J.
+<a name="ref11"></a>**11.** Brynildsrud O, Snipen LG, Bohlin J.
 CNOGpro: detection and quantification of CNVs in prokaryotic
 whole-genome sequencing data. *Bioinformatics* **31**, 1708-1715
 (2015).<br>
-<a name="ref12"></a>12. Lanfear R, Schalamun M, Kainer D, Wang W, Schwessinger B.
+<a name="ref12"></a>**12.** Lanfear R, Schalamun M, Kainer D, Wang W, Schwessinger B.
 MinIONQC: fast and simple quality control for MinION sequencing data.
 *Bioinformatics* **35**, 523-525 (2019).<br>
-<a name="ref13"></a>13. Bankevich A*, et al.*
+<a name="ref13"></a>**13.** Bankevich A*, et al.*
 SPAdes: a new genome assembly algorithm and its applications to
 single-cell sequencing. *J Comput Biol* **19**, 455-477 (2012).<br>
-<a name="ref14"></a>14. Kurtz S*, et al.* Versatile and open software for comparing large
+<a name="ref14"></a>**14.** Kurtz S*, et al.* Versatile and open software for comparing large
 genomes. *Genome Biol* **5**, R12 (2004).<br>
-<a name="ref15"></a>15. Li H, Durbin R. Fast and
+<a name="ref15"></a>**15.** Li H, Durbin R. Fast and
 accurate short read alignment with Burrows-Wheeler transform.
 *Bioinformatics* **25**, 1754-1760 (2009).<br>
-<a name="ref16"></a>16. Siguier P, Perochon J,
+<a name="ref16"></a>**16.** Siguier P, Perochon J,
 Lestrade L, Mahillon J, Chandler M. ISfinder: the reference centre for
 bacterial insertion sequences. *Nucleic Acids Res* **34**, D32-36
 (2006).<br>
-<a name="ref17"></a>17. Brettin T*, et al.* RASTtk: a modular and extensible
+<a name="ref17"></a>**17.** Brettin T*, et al.* RASTtk: a modular and extensible
 implementation of the RAST algorithm for building custom annotation
 pipelines and annotating batches of genomes. *Sci Rep* **5**, 8365
 (2015).
