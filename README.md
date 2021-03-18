@@ -57,13 +57,12 @@ All computations were made on CentOS v.7.6.
 
   - CNOGpro.R
 
-  - breseq\_parser\_confident.py
+  - breseq_parser_confident.py
 
-  - spread\_gd\_tsv.R
+  - spread_gd_tsv.R
 
-  - make\_repeats.pl
+  - make_repeats.pl
 
-<!-- end list -->
 
 2.  **Reads quality control**
 
@@ -72,25 +71,27 @@ in all samples had a very good distribution across all positions in
 reads and we did not trim reads based on Q-scores. The adapters were
 trimmed with Trimmomatic <a href="#ref2"><sup>2</sup></a>:
 
-java -jar trimmomatic-0.36.jar PE \\
+```
+java -jar trimmomatic-0.36.jar PE \
 
-\-phred33 \\
-
-\[Input reads 1\] \\
-
-\[Input reads 2\] \\
-
-\[Trimmed output paired reads 1\] \\
-
-\[Trimmed output single reads 1\] \\
-
-\[Trimmed output paired reads 1\] \\
-
-\[Trimmed output single reads 2\] \\
-
-ILLUMINACLIP:adapters.fasta:2:30:10
-
-MINLEN:65
+    -phred33 \
+    
+    [Input reads 1] \
+    
+    [Input reads 2] \
+    
+    [Trimmed output paired reads 1] \
+    
+    [Trimmed output single reads 1] \
+    
+    [Trimmed output paired reads 1] \
+    
+    [Trimmed output single reads 2] \
+    
+    ILLUMINACLIP:adapters.fasta:2:30:10\
+    
+    MINLEN:65
+```
 
 The adapter sequences used for trimming were copied from the Illumina
 Adapter Sequences document for the corresponding library preparation
@@ -106,63 +107,71 @@ Processed reads were aligned to a reference genome with BWA-MEM
 <a href="#ref15"><sup>15</sup></a>. First, we should create read group header that is
 required for Genome Analysis Toolkit (GATK) <a href="#ref6"><sup>6</sup></a>:
 
-read1=\[trimmed paired reads 1\]
+```
+read1=[trimmed paired reads 1]
 
 rgid=$(echo $read1)
 
-rgid=${rgid/\_1\_trimmed.fq.gz/} \# Leave only ID
+rgid=${rgid/_1_trimmed.fq.gz/} # Leave only ID
 
-rg="@RG\\\\tID:$rgid\\\\tSM:S1\\\\tPL:illumina\\\\tLB:L001\\\\tPU:R1"
+rg="@RG\tID:$rgid\tSM:S1\tPL:illumina\tLB:L001\tPU:R1"
+```
 
 Then run BWA-MEM itself:
 
-bwa mem \\
+```
+bwa mem \
 
-\-t \[Number of CPUs\] \\
-
-\-M \\ \# Parameter used for Picard compatibility
-
-\-R "$rg" \\ \# Read group header
-
-\-Y \\ \# Write all split hits as soft clipped
-
-\[path to the reference fasta\] \\
-
-\[Trimmed paired reads 1\] \\
-
-\[Trimmed paired reads 2\] \> Sample.sam
+    -t [Number of CPUs] \
+    
+    -M \ # Parameter used for Picard compatibility
+    
+    -R "$rg" \ # Read group header
+    
+    -Y \ # Write all split hits as soft clipped
+    
+    [path to the reference fasta] \
+    
+    [Trimmed paired reads 1] \
+    
+    [Trimmed paired reads 2] > Sample.sam
+```
 
 Sort SAM file, save it as BAM and create index with Picard tools
 (<https://broadinstitute.github.io/picard/>):
 
-java -jar \~/ngsbin/picard-tools-2.2.1/picard.jar SortSam \\
+```
+java -jar ~/ngsbin/picard-tools-2.2.1/picard.jar SortSam \
 
-I=Sample.sam \\
-
-O=Sample.bam \\
-
-SO=coordinate \\
-
-CREATE\_INDEX=true
+    I=Sample.sam \
+    
+    O=Sample.bam \
+    
+    SO=coordinate \
+    
+    CREATE_INDEX=true
+```
 
 2.  **Alignment recalibration**
 
 Realign reads with LoFreq Vitebri algorithm <a href="#ref4"><sup>4</sup></a>. As reads
 positions could be changed, we repeat sorting on the output bam:
 
-lofreq viterbi \\
+```
+lofreq viterbi \
 
-\--ref \[Path to the reference fasta\] \\
+    --ref [Path to the reference fasta] \
+    
+    --keepflags \
+    
+    -o Sample_v.bam \
+    
+    Sample.bam
 
-\--keepflags \\
+samtools sort -o Sample_i.bam Sample_v.bam
 
-\-o Sample\_v.bam \\
-
-Sample.bam
-
-samtools sort -o Sample\_i.bam Sample\_v.bam
-
-samtools index -b Sample\_i.bam
+samtools index -b Sample_i.bam
+```
 
 We performed the recommended Base Quality Score Recalibration (BQSR)
 with GATK. However, as there is no database of know SNP for *A.
@@ -172,57 +181,62 @@ mutations. However, as we have a high coverage samples and most trusted
 mutations would be anyway with high frequency we decided to skip it and
 make BQSR with the empty SNP database:
 
-java -jar \~/ngsbin/GATK-3.5/GenomeAnalysisTK.jar \\
+```
+java -jar ~/ngsbin/GATK-3.5/GenomeAnalysisTK.jar \
 
-\-T BaseRecalibrator \\
+    -T BaseRecalibrator \
+    
+    -R [Path to the reference fasta] \
+    
+    -I Sample_i.bam \
+    
+    -knownSites known.vcf \
+    
+    -o Sample_re.bqsr.grp
 
-\-R Path to the reference fasta\] \\
+java -jar ~/ngsbin/GATK-3.5/GenomeAnalysisTK.jar \
 
-\-I Sample\_i.bam \\
-
-\-knownSites known.vcf \\
-
-\-o Sample\_re.bqsr.grp
-
-java -jar \~/ngsbin/GATK-3.5/GenomeAnalysisTK.jar \\
-
-\-T PrintReads \\
-
-\-R \[Path to the reference fasta\] \\
-
-\-I Sample\_i.bam \\
-
-\-BQSR Sample\_re.bqsr.grp \\
-
-\-o Sample\_r\_bqsr.bam
+    -T PrintReads \
+    
+    -R [Path to the reference fasta] \
+    
+    -I Sample_i.bam \
+    
+    -BQSR Sample_re.bqsr.grp \
+    
+    -o Sample_r_bqsr.bam
+```
 
 To assess alignment quality we used Qualimap <a href="#ref8"><sup>8</sup></a>:
 
-qualimap bamqc \\
+```
+qualimap bamqc \
 
-\-bam Sample\_r\_bqsr.bam \\
+    -bam Sample_r_bqsr.bam \
 
-\-outfile BamQC.pdf
+    -outfile BamQC.pdf
+```
 
 3.  **SNP and indel variant calling**
 
 The variant calling of SNP and indels was performed with LoFreq:
 
-lofreq call-parallel \\
+```
+lofreq call-parallel \
 
-\--pp-threads \[Number of CPUs\] \\
-
-\--call-indels \\
-
-\-f \[Path to the reference fasta\] \\
-
-\-o variants.lofreq.vcf \\
-
-Sample\_r\_bqsr.bam
+    --pp-threads [Number of CPUs] \
+    
+    --call-indels \
+    
+    -f [Path to the reference fasta] \
+    
+    -o variants.lofreq.vcf \
+    
+    Sample_r_bqsr.bam
+```
 
 4.  **IS elements rearrangement**
 
-<!-- end list -->
 
   - The search of mobile elements rearrangement was done with iJump
     (<https://github.com/sleyn/ijump>) – the software that we developed
@@ -235,7 +249,7 @@ Sample\_r\_bqsr.bam
     
     3.  BLAST unaligned parts against the reference.
     
-    4.  Find best hits with \>90% identity to the reference with unique
+    4.  Find best hits with >90% identity to the reference with unique
         highest bitscore. If two or more hits share the same bit score -
         the junction considered as ambiguous and skipped. Usually this
         is happening because aligner maps reads to several copies of
@@ -243,163 +257,174 @@ Sample\_r\_bqsr.bam
     
     5.  Assess frequency of insertion by a formula:
 
-\[Frequency = \frac{\frac{R_{l} + \ R_{r}}{2}*(1 + \ \frac{B_{\min}}{A_{\text{rlen}}})}{D_{t}*(1 - \ \frac{\text{mmatch}}{A_{\text{rlen}}})}\]
+[Frequency = frac{frac{R_{l} +  R_{r}}{2}*(1 +  frac{B_{min}}{A_{text{rlen}}})}{D_{t}*(1 -  frac{text{mmatch}}{A_{text{rlen}}})}]
 
-> where:
-> 
-> *R<sub>l</sub>* – a number of reads that support junction to the
-> target on the "left" side of mobile element.
-> 
-> *R<sub>r</sub>* – a number of reads that support junction to the
-> target on the "right" side of mobile element.
-> 
-> *Dt* – average depth of coverage of the target region.
-> 
-> *B<sub>min</sub>* – a threshold for the minimum length for unaligned
-> parts of the reads used in the BLAST step. In algorithm we used 10nt.
-> 
-> *A<sub>rlen</sub>* – an average read length;
-> 
-> *mmatch* – a minimum length of the read part that could be aligned to
-> reference. The *mmatch* parameter is accessed from the data as a
-> minimum of longest clipped part of the read (e.g. for read in the SAM
-> file with CIGAR string 10S120M30S mmatch is 30).
+where:
+
+*R<sub>l</sub>* – a number of reads that support junction to the
+target on the "left" side of mobile element.
+
+*R<sub>r</sub>* – a number of reads that support junction to the
+target on the "right" side of mobile element.
+
+*Dt* – average depth of coverage of the target region.
+
+*B<sub>min</sub>* – a threshold for the minimum length for unaligned
+parts of the reads used in the BLAST step. In algorithm we used 10nt.
+
+*A<sub>rlen</sub>* – an average read length;
+
+*mmatch* – a minimum length of the read part that could be aligned to
+reference. The *mmatch* parameter is accessed from the data as a
+minimum of longest clipped part of the read (e.g. for read in the SAM
+file with CIGAR string 10S120M30S mmatch is 30).
 
 Before using iJump we made a BLAST search of reference genomes against
 ISFinder database <a href="#ref16"><sup>16</sup></a>. The output HTML files were processed
-with the isfinder\_parse.py script that comes with the iJump.
+with the isfinder_parse.py script that comes with the iJump.
 
-python3 isfinder\_parse.py \\
+```
+python3 isfinder_parse.py \
 
-\-i \[ISFinder BLAST HTML page\]
+    -i [ISFinder BLAST HTML page]
+```
 
 The script filters BLAST output and creates a table of IS elements
 boundaries that is used by iJump. The iJump is running with the
 following command:
 
-python3 isjump.py \\
+```
+python3 isjump.py \
 
-\-a \[Alignment BAM of SAM file\] \\
+    -a [Alignment BAM of SAM file] \
+    
+    -r [Reference FNA file with nucleotide FASTA] \
+    
+    -g [Reference GFF file with annotations] \
+    
+    -i [IS coordinates]
+```
 
-\-r \[Reference FNA file with nucleotide FASTA\] \\
-
-\-g \[Reference GFF file with annotations\]
-
-\-i \[IS coordinates\]
-
-> Detailed description of iJump usage and input data formats could be on
-> the GitHub page (<https://github.com/sleyn/ijump>).
+Detailed description of iJump usage and input data formats could be on
+the GitHub page (<https://github.com/sleyn/ijump>).
 
 1.  **Variant annotation and mutational dynamics analysis**
 
-> To annotate variant calling results we used snpEff <a href="#ref9"><sup>9</sup></a> and
-> custom scripts. All VCF files from LoFreq output were copied to one
-> directory and merged into one VCF file using bcftools:
-> 
-> for file in \*.vcf
-> 
-> do
-> 
-> gz=${file/.vcf/.gz}
-> 
-> bgzip -c $file \> $gz
-> 
-> tabix -p vcf $gz
-> 
-> done
-> 
-> bcftools merge \\
-> 
-> \-m none \\
-> 
-> \-o merged.vcf \\
-> 
-> \*.gz
-> 
-> snpEff was applied on the merged file:
-> 
-> java -jar \~/ngsbin/snpEff/snpEff.jar \\
-> 
-> \-ud 100 \\
-> 
-> \-no-downstream \\
-> 
-> \-no-upstream \\
-> 
-> \-v \[database for the selected reference genome\] \\
-> 
-> merged.vcf \> ann.vcf
-> 
-> Results of the LoFreq variant calling were combined into one
-> comparative table using custom timeline.py script.
-> 
-> python3 timeline.py \\
-> 
-> \-g \[Reference GFF file with annotations\] \\
-> 
-> \-a ann.vcf \\
-> 
-> \-r \[File with repeats (see below)\] \\
-> 
-> \-v \[Path to the directory with VCF files\] \\
-> 
-> \-o summary\_table.txt
-> 
-> Additionally, to manual curation of the variant list we mark two cases
-> of suspicious variants:
+To annotate variant calling results we used snpEff <a href="#ref9"><sup>9</sup></a> and
+custom scripts. All VCF files from LoFreq output were copied to one
+directory and merged into one VCF file using bcftools:
+```
+for file in *.vcf
+
+do
+
+    gz=${file/.vcf/.gz}
+    
+    bgzip -c $file > $gz
+    
+    tabix -p vcf $gz
+
+done
+
+bcftools merge \
+
+    -m none \
+    
+    -o merged.vcf \
+    
+    *.gz
+```
+
+snpEff was applied on the merged file:
+
+```
+java -jar snpEff.jar \
+
+    -ud 100 \
+    
+    -no-downstream \
+    
+    -no-upstream \
+    
+    -v [database for the selected reference genome] \
+    
+    merged.vcf > ann.vcf
+```
+
+Results of the LoFreq variant calling were combined into one
+comparative table using custom timeline.py script.
+
+```
+python3 timeline.py \
+
+    -g [Reference GFF file with annotations] \
+    
+    -a ann.vcf \
+    
+    -r [File with repeats (see below)] \
+    
+    -v [Path to the directory with VCF files] \
+    
+    -o summary_table.txt
+```
+
+Additionally, to manual curation of the variant list we mark two cases
+of suspicious variants:
 
 1.  Variants in the potential repetitive regions where mapped reads
     could be attributed to the wrong copy of the region by error.
 
-> To do this we followed instructions from MUMmer <a href="#ref14"><sup>14</sup></a> manual
-> to find repeats in the reference genome:
-> 
-> prefix=\[Prefix of the output files\]
-> 
-> nucmer \\
-> 
-> \-p $prefix \\
-> 
-> \-nosimplify \\
-> 
-> \--maxmatch \\
-> 
-> \[Reference FNA file\] \\
-> 
-> \[Reference FNA file\]
-> 
-> show-coords \\
-> 
-> \-clrT \\
-> 
-> \-I 90 \\
-> 
-> \-L 65 \\
-> 
-> $prefix".delta" \> \\
-> 
-> $prefix".aln"
-> 
-> make\_repeats.pl $prefix
-> 
-> This procedure will create file with potential repeated regions in the
-> genome with identity 90% or more and length at least 65nt.
+To do this we followed instructions from MUMmer <a href="#ref14"><sup>14</sup></a> manual
+to find repeats in the reference genome:
+
+```
+prefix=[Prefix of the output files]
+
+nucmer \
+
+   -p $prefix \
+   
+   -nosimplify \
+   
+   --maxmatch \
+   
+   [Reference FNA file] \
+   
+   [Reference FNA file]
+   
+show-coords \
+
+    -clrT \
+    
+    -I 90 \
+    
+    -L 65 \
+    
+    $prefix".delta" > $prefix".aln"
+
+make_repeats.pl $prefix
+```
+
+This procedure will create file with potential repeated regions in the
+genome with identity 90% or more and length at least 65nt.
 
 2.  Variants that have stable less than 100% frequency in the
     population. It is another sign that alignment software has troubles
     with this region.
 
-> To test uniformity of frequencies of a variant across samples for each
-> reactor we preform chi-squared test for uniform distribution. This
-> test id done automatically with the timeline.py script.
-> 
-> Results of the iJump IS element rearrangement calling were combined to
-> a comparative table using combine\_results.py script from the iJump
-> package.
-> 
-> python3 combine\_results.py \\
-> 
-> \-d \[Path to the directory with iJump report files\]
+To test uniformity of frequencies of a variant across samples for each
+reactor we preform chi-squared test for uniform distribution. This
+test id done automatically with the timeline.py script.
+
+Results of the iJump IS element rearrangement calling were combined to
+a comparative table using combine_results.py script from the iJump
+package.
+
+```
+python3 combine_results.py \
+
+    -d [Path to the directory with iJump report files]
+```
 
 4.  **Clonal sequencing data analysis**
     
@@ -408,19 +433,21 @@ python3 isjump.py \\
 We used the breseq software <a href="#ref10"><sup>10</sup></a> to call variants in clonal
 data:
 
-breseq \\
+```
+breseq \
 
-\-j \[number of CPUs\] \\
-
-\-n \[Clone ID\] \\
-
-\-r \[Reference GBK file\] \\
-
-\--require-match-length 40 \\
-
-\[Trimmed paired reads 1\] \\
-
-\[Trimmed paired reads 2\]
+    -j [number of CPUs] \
+    
+    -n [Clone ID] \
+    
+    -r [Reference GBK file] \
+    
+    --require-match-length 40 \
+    
+    [Trimmed paired reads 1] \
+    
+    [Trimmed paired reads 2]
+```
 
 The Copy Number Variation analysis was done using CNOGpro package for
 the R programming language. The CNOGpro package uses GBK files but it is
@@ -429,159 +456,177 @@ necessary to split multiple contigs GBK file to the separate files for
 each contig. For each contig the hitsfile containing coordiantes of
 mapped reads should be generated (for details see CNOGpro manual):
 
-\# in breseq data directory for each contig:
+# in breseq data directory for each contig:
 
-export CONTIG=\[Contig name\]
+```
+export CONTIG=[Contig name]
 
-samtools view reference.bam | \\
+samtools view reference.bam | \
 
-perl -lane \\
+    perl -lane \
 
-'print "$F\[2\]\\t$F\[3\]" \\
+        'print "$F[2]\t$F[3]" \
 
-if $F\[2\] =\~ m/$ENV{CONTIG}/' \\
+        if $F[2] =~ m/$ENV{CONTIG}/' \
 
-\> out.hits
+    > out.hits
+```
 
-> CNOGpro was wrapped by us into an R script. Script filters out IS
-> elements and outputs only CDS:
-> 
-> Rscript --vanilla CNOGpro.R \\
-> 
-> \[Reference GBK file with the selected contig\] \\
-> 
-> \[Contig name\] \\
-> 
-> \[iJump IS elements coordinates table to filter out them\] \\
-> 
-> \[Clone ID used for output file name\]
+CNOGpro was wrapped by us into an R script. Script filters out IS
+elements and outputs only CDS:
+
+```
+Rscript --vanilla CNOGpro.R \
+
+    [Reference GBK file with the selected contig] \
+
+    [Contig name] \
+    
+    [iJump IS elements coordinates table to filter out them] \
+    
+    [Clone ID used for output file name]
+```
 
 2.  **Mutational data comparison**
 
 To collect breseq results in the table format we used custom script that
-makes TSV table from the annotated GD files (\[breseq work
-directory\]/output/evidence/annotated.gd):
+makes TSV table from the annotated GD files ([breseq work
+directory]/output/evidence/annotated.gd):
 
-python3 breseq\_parser\_confident.py \\
+```
+python3 breseq_parser_confident.py \
 
-\-g \[directory with annotated gd files\] \\
+    -g [directory with annotated gd files] \
 
-\-o \[output file\]
+    -o [output file]
+```
 
 To make a comparison table for variants found in the clonal sequencing
 data we used gdtools with a custom script for reformatting the gdtools
 output:
 
-gdtools ANNOTATE \\
+```
+gdtools ANNOTATE \
 
-\-r \[Reference GBK file\] \\
+    -r [Reference GBK file] \
+    
+    -o [Output file] \
+    
+    -f TSV \ # TSV format
+    
+    [Directory with GD files]/*.gd
 
-\-o \[Output file\] \\
+Rscript --vanilla spread_gd_tsv.R \
 
-\-f TSV \\ \# TSV format
+    [gdtools output file] \
+    
+    [Output table]
+```
 
-\[Directory with GD files\]/\*.gd
+To make a comparison table for copy number variations found with
+CNOGpro we used a custom script:
 
-Rscript --vanilla spread\_gd\_tsv.R \\
+```
+Rscript --vanilla Reshape_cnv.R \
 
-\[gdtools output file\] \\
-
-\[Output table\]
-
-> To make a comparison table for copy number variations found with
-> CNOGpro we used a custom script:
-> 
-> Rscript --vanilla Reshape\_cnv.R \\
-> 
-> \[Directory with the CNOGpro outputs\] \\
-> 
-> \[Output table\] \\
-> 
-> \[Minimum difference from 1 to show gene in the output. We used 0.3\]
+    [Directory with the CNOGpro outputs] \
+    
+    [Output table] \
+    
+    [Minimum difference from 1 to show gene in the output. We used 0.3]
+```
 
 5.  **Novel assembly of *Acenitobacter baumannii* ATCC 17978 genome**
 
-> Initial variant calling against public reference revealed high number
-> of variants in unevolved culture of *Acinetobacter baumannii* ATCC
-> 19978 (number of variants with frequency \>85%: 16 variants against
-> GCA\_001593425.2, 98.46% mapped reads; 87 variants against
-> GCA\_000015425.1, 98.97% mapped reads). To improve variant calling we
-> decided to make a hybrid assembly with Oxford Nanopore long reads.
-> 
-> One clone of unevolved *Acinetobacter baumannii* ATCC 19978 was
-> sequences with ONT MinION sequencer using Nanopore Rapid Barcoding
-> gDNA Sequencing kit (SQK-RBK004). Raw sequencing data QC was performed
-> with MinionQC.
-> 
-> Reads were demultiplexed with Albacore basecaller (ONT community
-> site):
-> 
-> read\_fast5\_basecaller.py \\
-> 
-> \-i \[Path to the FAST5 files directory\] \\
-> 
-> \-t \[Number of CPUs\] \\
-> 
-> \-s \[Path to the directory for output FASTQ file\] \\
-> 
-> \-f FLO-MIN106 \\
-> 
-> \-k SQK-RBK004 \\
-> 
-> \-r \\
-> 
-> \-o fastq \\
-> 
-> \-q 0
-> 
-> As in the library all barcoded samples were from the same organism to
-> increase coverage, we decided to make second round of demultiplexing
-> on unclassified reads with Porechop
-> (<https://github.com/rrwick/Porechop>):
-> 
-> porechop \\
-> 
-> \-i \[Path to the unclassified/ folder\] \\
-> 
-> \-b Porechop\_barcodes/ \\
-> 
-> \--threads \[Number of CPUs\] \\
-> 
-> \--untrimmed \\
-> 
-> \--discard\_middle
-> 
-> Adapters from the reads demultiplexed by Albacore were trimmed by
-> Porechop:
-> 
-> porechop \\
-> 
-> \-i \[FASTQ file\] \\
-> 
-> \-o \[Output trimmed FASTQ file\] \\
-> 
-> \--discard\_middle \\
-> 
-> \--threads \[Number of CPUs\]
-> 
-> Both reads demultiplexed by Albacore and Porechop were combined by
-> simple cat command. The hybrid assembly of *Acinetobacter baumannii*
-> ATCC 19978 genome was performed using SPAdes assembler <a href="#ref13"><sup>13</sup></a>:
-> 
-> spades.py \\
-> 
-> \-k 21,33,55,77 \\
-> 
-> \--careful \\
-> 
-> \--nanopore \[Nanopore fasta files\] \\
+Initial variant calling against public reference revealed high number
+of variants in unevolved culture of *Acinetobacter baumannii* ATCC
+19978 (number of variants with frequency >85%: 16 variants against
+GCA_001593425.2, 98.46% mapped reads; 87 variants against
+GCA_000015425.1, 98.97% mapped reads). To improve variant calling we
+decided to make a hybrid assembly with Oxford Nanopore long reads.
 
-\[Trimmed Illumina paired reads 1\] \\
+One clone of unevolved *Acinetobacter baumannii* ATCC 19978 was
+sequences with ONT MinION sequencer using Nanopore Rapid Barcoding
+gDNA Sequencing kit (SQK-RBK004). Raw sequencing data QC was performed
+with MinionQC.
 
-\[Trimmed Illumina paired reads 2\]
+Reads were demultiplexed with Albacore basecaller (ONT community
+site):
 
-> Assembled genome was annotated by RASTtk pipeline on the corresponding
-> web server (<https://rast.nmpdr.org/>) <a href="#ref17"><sup>17</sup></a>.
+```
+read_fast5_basecaller.py \
+
+    -i [Path to the FAST5 files directory] \
+    
+    -t [Number of CPUs] \
+    
+    -s [Path to the directory for output FASTQ file] \
+    
+    -f FLO-MIN106 \
+    
+    -k SQK-RBK004 \
+    
+    -r \
+    
+    -o fastq \
+    
+    -q 0
+```
+
+As in the library all barcoded samples were from the same organism to
+increase coverage, we decided to make second round of demultiplexing
+on unclassified reads with Porechop
+(<https://github.com/rrwick/Porechop>):
+
+```
+porechop \
+
+    -i [Path to the unclassified/ folder] \
+    
+    -b Porechop_barcodes/ \
+    
+    --threads [Number of CPUs] \
+    
+    --untrimmed \
+    
+    --discard_middle
+```
+
+Adapters from the reads demultiplexed by Albacore were trimmed by
+Porechop:
+
+```
+porechop \
+
+    -i [FASTQ file] \
+    
+    -o [Output trimmed FASTQ file] \
+    
+    --discard_middle \
+    
+    --threads [Number of CPUs]
+```
+
+Both reads demultiplexed by Albacore and Porechop were combined by
+simple cat command. The hybrid assembly of *Acinetobacter baumannii*
+ATCC 19978 genome was performed using SPAdes assembler <a href="#ref13"><sup>13</sup></a>:
+
+```
+spades.py \
+
+    -k 21,33,55,77 \
+    
+    --careful \
+    
+    --nanopore [Nanopore fasta files] \
+    
+    [Trimmed Illumina paired reads 1] \
+    
+    [Trimmed Illumina paired reads 2]
+```
+
+Assembled genome was annotated by RASTtk pipeline on the corresponding
+web server (<https://rast.nmpdr.org/>) <a href="#ref17"><sup>17</sup></a>.
 
 **References**
 
