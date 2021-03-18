@@ -456,9 +456,9 @@ necessary to split multiple contigs GBK file to the separate files for
 each contig. For each contig the hitsfile containing coordiantes of
 mapped reads should be generated (for details see CNOGpro manual):
 
+```
 # in breseq data directory for each contig:
 
-```
 export CONTIG=[Contig name]
 
 samtools view reference.bam | \
